@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111319">
+  <meta name="description" content="Create, connect, and explore ideas on a flexible visual canvas.">
+  <title>Node Weave — Visual workspace</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>node<span class="brand-light">weave</span></span></div>
+      <div class="workspace-label">WORKSPACE <span class="workspace-dot"></span></div>
+      <div class="project-card"><div class="project-icon">✳</div><div><strong>Untitled canvas</strong><small>Personal workspace</small></div><span class="chevron">⌄</span></div>
+      <div class="sidebar-section-label">CREATE</div>
+      <button class="side-action primary-action" id="add-node-side"><span class="action-icon">＋</span> New node <kbd>N</kbd></button>
+      <button class="side-action" id="connect-side"><span class="action-icon link-icon">↗</span> Connect nodes <kbd>C</kbd></button>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section-label">YOUR CANVAS <span id="node-count">0 nodes</span></div>
+      <div id="node-list" class="node-list"></div>
+      <div class="sidebar-bottom"><div class="tip-icon">✦</div><div><strong>Make connections</strong><p>Click a node’s dot, then another dot to link them.</p></div></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="slash">/</span><strong>Untitled canvas</strong><span class="saved"><span></span> Saved locally</span></div>
+        <div class="top-actions"><button class="text-button" id="import-btn" title="Import JSON">Import</button><button class="text-button" id="export-btn" title="Export JSON">Export</button><div class="top-separator"></div><button class="avatar" aria-label="Personal workspace">NW</button></div>
+      </header>
+      <div class="canvas-heading"><div><div class="eyebrow">VISUAL WORKSPACE <span>✳</span> 01</div><h1>Untitled canvas</h1><p>Map your thoughts. See how everything connects.</p></div><div class="heading-actions"><button class="ghost-button" id="fit-btn"><span>⌗</span> Fit view</button><button class="add-button" id="add-node-main"><span>＋</span> Add node</button></div></div>
+      <div class="canvas-shell" id="canvas-shell" tabindex="0" aria-label="Node canvas. Double click to add a node.">
+        <div class="canvas-grid"></div>
+        <div class="canvas-note"><span class="live-dot"></span> LIVE CANVAS <span class="note-sep">·</span> Double-click to add a node</div>
+        <div class="world" id="world"><svg id="edges" aria-hidden="true"></svg><div id="nodes"></div></div>
+        <div id="empty-hint" class="empty-hint" hidden><div>✳</div><h2>Start with an idea</h2><p>Add a node, then connect it to another.</p><button class="add-button" id="empty-add">＋ Add your first node</button></div>
+        <div class="canvas-bottom"><div class="hint"><span>⠿</span> Drag to move <b>·</b> Scroll to zoom <b>·</b> Double-click to create</div><div class="zoom-controls"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Zoom in">＋</button><button id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">⌗</button></div></div>
+      </div>
+      <footer class="statusbar"><span><span class="status-dot"></span> All changes saved in this browser</span><span id="edge-count">0 connections</span></footer>
+    </main>
+
+    <aside class="inspector" id="inspector"><div class="inspector-header"><span>INSPECTOR</span><button id="close-inspector" aria-label="Close inspector">×</button></div><div id="inspector-content"></div></aside>
+  </div>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
