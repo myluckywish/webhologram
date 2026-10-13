@@ -1,11 +1,12 @@
 (() => {
-  const STORAGE_KEY = 'node-weave-canvas-v1';
+  const STORAGE_KEY = 'lics-trove-canvas-v1';
+  const LEGACY_STORAGE_KEY = 'node-weave-canvas-v1';
   const colors = {
-    gold: { bg: '#6c5637', ink: '#edc98d', dot: '#d9b777', label: 'IDEA', symbol: '✳' },
-    blue: { bg: '#364f68', ink: '#a9c9e9', dot: '#80b5e5', label: 'CONCEPT', symbol: '◇' },
-    purple: { bg: '#584766', ink: '#d6b6e4', dot: '#c19bd8', label: 'NOTE', symbol: '▤' },
-    green: { bg: '#3d5b50', ink: '#a9d7bd', dot: '#91c7a5', label: 'TASK', symbol: '✓' },
-    coral: { bg: '#704b48', ink: '#edb0a4', dot: '#dc9990', label: 'POINT', symbol: '◆' }
+    gold: { bg: '#6c5039', ink: '#f0c997', dot: '#d1a36b', label: 'IDEA', symbol: '✳' },
+    blue: { bg: '#605849', ink: '#dfd0af', dot: '#bba984', label: 'CONCEPT', symbol: '◇' },
+    purple: { bg: '#6a4d46', ink: '#e9b8a8', dot: '#cb9180', label: 'NOTE', symbol: '▤' },
+    green: { bg: '#485b49', ink: '#c5d9b9', dot: '#9eb796', label: 'TASK', symbol: '✓' },
+    coral: { bg: '#704c42', ink: '#efbca9', dot: '#d6957e', label: 'POINT', symbol: '◆' }
   };
   const seed = {
     nodes: [
@@ -19,7 +20,11 @@
   const $ = id => document.getElementById(id);
   const shell = $('canvas-shell'), world = $('world'), nodesEl = $('nodes'), edgesEl = $('edges');
   let data;
-  try { const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)); data = validData(stored) ? stored : structuredClone(seed); }
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY));
+    data = validData(stored) ? stored : structuredClone(seed);
+    if (validData(stored) && !localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+  }
   catch { data = structuredClone(seed); }
   let selection = null, pending = null, pointer = null, transform = { x: 0, y: 0, scale: 1 }, toastTimer;
 
@@ -194,7 +199,7 @@
   $('connect-side').onclick = () => { if (selection?.type === 'node') { pending = selection.id; renderSelection(); notify('Click a dot on another node'); } else notify('Select a node, then click its dot'); };
   $('fit-btn').onclick = fitView; $('zoom-in').onclick = () => zoom(1.2); $('zoom-out').onclick = () => zoom(1 / 1.2); $('zoom-reset').onclick = () => { transform.scale = 1; fitView(); };
   $('close-inspector').onclick = () => select(null);
-  $('export-btn').onclick = () => { const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'node-weave-canvas.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); notify('Canvas exported'); };
+  $('export-btn').onclick = () => { const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'lics-trove-canvas.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); notify('Canvas exported'); };
   $('import-btn').onclick = () => $('import-file').click();
   $('import-file').onchange = async ev => { const file = ev.target.files[0]; if (!file) return; try { const incoming = JSON.parse(await file.text()); if (!validData(incoming)) throw Error(); const ids = new Set(incoming.nodes.map(n => n.id)); incoming.edges = incoming.edges.filter(e => ids.has(e.from) && ids.has(e.to)); data = incoming; selection = null; pending = null; save(); render(); fitView(); notify('Canvas imported'); } catch { notify('Could not import this canvas'); } ev.target.value = ''; };
   document.addEventListener('keydown', ev => { if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return; if (ev.key.toLowerCase() === 'n') { ev.preventDefault(); addNode(); } if (ev.key.toLowerCase() === 'c') { ev.preventDefault(); $('connect-side').click(); } if (ev.key === 'Escape') { pending = null; select(null); renderEdges(); } if (ev.key === 'Delete' || ev.key === 'Backspace') { if (selection) { ev.preventDefault(); deleteSelected(); } } });
